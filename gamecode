@@ -1,0 +1,162 @@
+playSound("sound://category_loops/faultering_desicion_loop1.mp3", true);
+var backgroundimage = createSprite(200, 200);
+backgroundimage.setAnimation("bg_landscape06_1");
+var gems = 0;
+var sprite = createSprite(30, 280);
+var gravity = 2;
+var jumptime = 0;
+sprite.setAnimation("grey_shirt_hand_up_1");
+sprite.scale = 0.25;
+var ground = createSprite(200, 400);
+ground.visible = 0;
+ground.width = 400;
+var platform = createSprite(300, 325);
+platform.setAnimation("texture_14_1");
+platform.width = 100;
+platform.height = 50;
+var platform2 = createSprite(100, 225);
+platform2.setAnimation("texture_14_1");
+platform2.width = 200;
+platform2.height = 50;
+var platform3 = createSprite(225, 280);
+platform3.setAnimation("texture_14_1");
+platform3.width = 50;
+platform3.height = 50;
+platform3.visible = 0;
+var platform4 = createSprite(300, 175);
+platform4.setAnimation("texture_14_1");
+platform4.width = 200;
+platform4.height = 50;
+platform4.visible = 0;
+var button = createSprite(330, 270);
+button.setAnimation("down_green_result_1");
+button.scale = 0.1;
+var button2 = createSprite(40, 160);
+button2.setAnimation("down_green_result_1");
+button2.scale = 0.1;
+button2.visible = 0;
+var button3 = createSprite(220, 0);
+button3.setAnimation("gameplay_purplediamond_1");
+button3.scale = 0.1;
+button3.visible = 0;
+var evilvictor = createSprite(350, 105);
+evilvictor.setAnimation("monster_19_1");
+evilvictor.scale = 0.3;
+var group = createGroup();
+var group2 = createGroup();
+group.add(ground);
+group.add(platform);
+group2.add(platform2);
+group2.add(platform3);
+group2.add(platform4);
+playSpeech("I am Victor, I must destroy Evil Victor.", "male", "English");
+function draw() {
+  if (keyDown("left")) {
+    sprite.velocityX = -4;
+  }
+  if (keyWentUp("left")) {
+    sprite.velocityX = 0;
+  }
+  if (keyDown("right")) {
+    sprite.velocityX = 4;
+  }
+  if (keyWentUp("right")) {
+    sprite.velocityX = 0;
+  }
+  sprite.velocityY = gravity;
+  evilvictor.velocityY = 0;
+  if (keyDown("up")) {
+    jumptime = jumptime + 1;
+    if (sprite.collide(group)) {
+      gravity = -7;
+      console.log("jump");
+    }
+    if (jumptime > 10) {
+      gravity = 4;
+    }
+  }
+  if (keyWentUp("up")) {
+    gravity = 4;
+  }
+  if (sprite.collide(group)) {
+    jumptime = 0;
+  }
+  if (sprite.x < 0) {
+    sprite.x = 400;
+  }
+  if (sprite.x > 400) {
+    sprite.x = 0;
+  }
+  if (sprite.overlap(button)) {
+    button.destroy();
+    group2.remove(platform2);
+    group.add(platform2);
+    group2.remove(platform3);
+    group.add(platform3);
+    platform3.visible = true;
+    button2.visible = true;
+  }
+  if (sprite.overlap(button2)) {
+    button2.destroy();
+    group2.remove(platform4);
+    group.add(platform4);
+    platform4.visible = true;
+    button3.y = 120;
+    button3.visible = 1;
+  }
+  if (sprite.overlap(button3)) {
+    platform4.destroy();
+    evilvictor.destroy();
+    gems = gems + 1;
+    button3.x = randomNumber(0, 400);
+    button3.y = randomNumber(100, 200);
+    platform3.x = button3.x;
+    platform3.y = button3.y + 50;
+    platform2.x = button3.x - 150;
+    if (platform2.x < 0) {
+      platform2.x = button3.x + 150;
+    }
+    platform2.y = button3.y + 100;
+    platform.x = platform2.x - 150;
+    if (platform.x < 0) {
+      platform.x = platform2.x + 150;
+    }
+  }
+  if (gems == 10) {
+    stopSound("sound://category_loops/faultering_desicion_loop1.mp3");
+    playSound("sound://category_loops/show_me_a_hero_middle_loop.mp3", false);
+    backgroundimage.setAnimation("bg_landscape06_2");
+    platform.destroy();
+    platform2.destroy();
+    platform3.destroy();
+    button3.destroy();
+    gems = gems + 1;
+  }
+  sprite.collide(group);
+  sprite.overlap(group2);
+  evilvictor.collide(group);
+  drawSprites();
+  fill("white");
+  stroke("black");
+  strokeWeight(6);
+  textSize(16);
+  text("I am Victor, I must destroy Evil Victor", 10, 230);
+  if (World.seconds > 2) {
+    drawSprites();
+    textSize(0);
+    drawSprites();
+    text("VictorLand 2015", 145, 200);
+    if (World.seconds > 4) {
+      drawSprites();
+      textSize(0);
+      text("Destroy Evil Victor by stealing his Evil Gems", 10, 20);
+      text("You can climb platforms by jumping while facing them.", 10, 40);
+      text("Evil Gem Amount: " + gems + "/10", 10, 100);
+      if (gems >= 10) {
+        drawSprites();
+        text("You have defeated Evil Victor and saved VictorLand!", 10, 200);
+        textSize(50);
+      }
+    }
+  }
+}
